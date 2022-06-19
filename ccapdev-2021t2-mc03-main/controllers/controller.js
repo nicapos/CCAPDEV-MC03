@@ -12,9 +12,18 @@ const controller = {
             request to path `/`. This displays `index.hbs` with all
             transactions currently stored in the database.
     */
-    getIndex: function(req, res) {
-        // your code here
-        res.render('index'); // This is to load the page initially
+    getIndex: function (req, res) { // WORKS
+        var query = {};
+        var projection = 'name refno amount';
+
+        db.findMany(Transaction, query, projection, function (result) {
+            if (result) {
+                let data = JSON.parse(JSON.stringify(result));
+                //console.log(data);
+                res.render('index', {transaction: data});
+            } else
+                res.render('index');
+        });
     },
 
     /*
@@ -25,7 +34,13 @@ const controller = {
             reference number, otherwise, it returns an empty string.
     */
     getCheckRefNo: function(req, res) {
-        // your code here
+        var refno = req.query.refno;
+        var query = {refno: refno};
+        var projection = 'refno';
+
+        db.findOne(Transaction, query, projection, function (result) {
+            res.send(result);
+        });
     },
 
     /*
@@ -35,7 +50,19 @@ const controller = {
             transaction to the list of transactions in `index.hbs`.
     */
     getAdd: function(req, res) {
-        // your code here
+        var name = req.query.name;
+        var refno = req.query.refno;
+        var amount = req.query.amount;
+        var transaction = {
+            name: name,
+            refno: refno,
+            amount: amount
+        };
+
+        db.insertOne(Transaction, transaction, function(flag) {
+            if (flag)
+                res.send(flag);
+        });
     },
 
     /*
@@ -45,7 +72,12 @@ const controller = {
             transactions in `index.hbs`.
     */
     getDelete: function (req, res) {
-        // your code here
+        var refno = req.query.refno;
+        var query = {refno: refno};
+
+        db.deleteOne(Transaction, query, function (result) {
+            res.send(result);
+        });
     }
 
 }
