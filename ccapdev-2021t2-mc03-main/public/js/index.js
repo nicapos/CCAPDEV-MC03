@@ -19,8 +19,9 @@ $(document).ready(function () {
     */
     $('#refno').keyup(function () {
         var refno = $('#refno').val();
+        var query = {refno: refno};
 
-        $.get('/getCheckRefNo', {refno: refno}, function (result) {
+        $.get('/getCheckRefNo', query, function (result) {
             if (result.refno == refno) {
                 $('#refno').css('background-color', 'red');
                 $('#error').text('Reference number already in the database');
@@ -58,13 +59,15 @@ $(document).ready(function () {
         if (!name || !refno || !amount)
             $('#error').text('Fill up all fields');
         else {
-            var transaction = {
+            var query = {
                 name: name,
                 refno: refno,
                 amount: amount
             };
 
-            $.get('/add', transaction, function(data, status) {});
+            $.get('/add', query, function(result) {
+                $('#cards').append(result);
+            });
 
             // Reset form
             $('#name').val('');

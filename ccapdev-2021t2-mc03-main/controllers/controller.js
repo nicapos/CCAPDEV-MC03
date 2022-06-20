@@ -18,8 +18,7 @@ const controller = {
 
         db.findMany(Transaction, query, projection, function (result) {
             if (result) {
-                let data = JSON.parse(JSON.stringify(result));
-                //console.log(data);
+                let data = JSON.parse(JSON.stringify(result)); // list of Transaction objects
                 res.render('index', {transaction: data});
             } else
                 res.render('index');
@@ -53,15 +52,17 @@ const controller = {
         var name = req.query.name;
         var refno = req.query.refno;
         var amount = req.query.amount;
-        var transaction = {
+        var query = {
             name: name,
             refno: refno,
             amount: amount
         };
 
-        db.insertOne(Transaction, transaction, function(flag) {
+        db.insertOne(Transaction, query, function(flag) {
             if (flag)
-                res.send(flag);
+                res.render('partials/card', query, function (err, html) {
+                    res.send(html);
+                });
         });
     },
 
